@@ -201,7 +201,10 @@ def warm_images(instance_or_queryset, rendition_key_set: str = None):
 
     for image_field in image_fields:
         if rendition_key_set is None:
-            rendition_key_set = image_field.image_sizes
+            rendition_key_set = (
+                image_field.image_sizes
+                or getattr(model, 'image_sizes')
+            )
 
         img_warmer = VersatileImageFieldWarmer(
             instance_or_queryset=instance_or_queryset,

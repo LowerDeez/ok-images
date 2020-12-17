@@ -39,30 +39,6 @@ class ImageMixin(models.Model):
     class Meta:
         abstract = True
 
-    def get_thumbnail_image(self, size=None):
-        """
-        Return url of thumbnailed image
-        """
-        try:
-            if size:
-                return self.image.thumbnail[size].url
-            else:
-                return self.image.url
-        except Exception:
-            return self.link if hasattr(self, 'link') else ''
-
-    def get_crop_image(self, size=None):
-        """
-        Return url of cropped image
-        """
-        try:
-            if size:
-                return self.image.crop[size].url
-            else:
-                return self.image.url
-        except Exception:
-            return self.link if hasattr(self, 'link') else ''
-
     def delete(self, *args, **kwargs):
         self.image.delete(save=False)
         super().delete(*args, **kwargs)
