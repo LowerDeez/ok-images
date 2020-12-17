@@ -2,8 +2,7 @@
 django-ok-images |PyPI version|
 ===============================
 
-|Build Status| |Code Health| |Coverage| |Requirements Status| |Python Versions| |PyPI downloads| |license|
-|Project Status|
+|Build Status| |Code Health| |Python Versions| |PyPI downloads| |license| |Project Status|
 
 WebP extensions for `django-versatileimagefield`_.
 
@@ -137,10 +136,6 @@ Utils:
    :target: https://github.com/LowerDeez/ok-images/blob/master/LICENSE
 .. |PyPI downloads| image:: https://img.shields.io/pypi/dm/django-ok-images.svg
    :alt: PyPI downloads
-.. |Requirements Status| image:: https://requires.io/github/LowerDeez/ok-images/requirements.svg?branch=master
-.. |Coverage| image:: https://api.codacy.com/project/badge/Coverage/e5078569e40d428283d17efa0ebf9d19
-   :target: https://www.codacy.com/app/LowerDeez/ok-images
-   :alt: Code coverage
 .. |Project Status| image:: https://img.shields.io/pypi/status/django-ok-images.svg
    :target: https://pypi.org/project/django-ok-images/
    :alt: Project Status
