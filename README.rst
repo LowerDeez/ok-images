@@ -34,8 +34,8 @@ How to enable image optimization through TinyPNG:
 ``TINYPNG_API_KEY`` - TinyPNG api key.
 
 
-How to use:
-===========
+How to use
+==========
 
 WebP sizers and filter:
 -----------------------
@@ -52,9 +52,11 @@ Add next file in any app to register sizers and filters (`more details <https://
 Fields:
 -------
 
-There is an OptimizedImageField, inherited from VersatileImageField.
+There is an ``OptimizedImageField``, inherited from `VersatileImageField <https://django-versatileimagefield.readthedocs.io/en/latest/model_integration.html#model-integration>`_.
 
 Example of usage:
+
+Add next settings (`more details <https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html#reusing-rendition-key-sets>`_):
 
 .. code:: python
 
@@ -72,9 +74,15 @@ Example of usage:
         ],
     }
 
+Define a model like this:
+
+.. code:: python
+
     # models.py
 
     class Product(models.Model):
+        image_sizes = 'product'  # could be set as a global rendition key set for an each image field
+
         image = OptimizedImageField(
             _('Image'),
             ppoi_field='ppoi',
@@ -89,7 +97,7 @@ Example of usage:
             verbose_name=_('PPOI')
         )
 
-If `image_sizes` is not defined, uses next default rendition key set:
+If ``image_sizes`` is not defined, uses next default rendition key set:
 
 .. code:: python
 
@@ -101,19 +109,21 @@ How to access generated previews:
 
 .. code:: python
 
+    product.image.full_size
+    product.image.catalog_preview
     product.image.desktop_webp
 
 
 Utils:
 ------
 
-``delete_all_created_images`` - delete all created images (can be skipped with `delete_images` argument) and clear cache for passed models
+``delete_all_created_images`` - delete all created images (can be skipped with ``delete_images`` argument) and clear cache for passed models.
 
 ``warm_images`` - creates all sized images for a given instance or queryset with passed rendition key set.
 
 .. code:: python
 
-    delete_all_created_images(Product, delete_images = True)
+    delete_all_created_images(Product, delete_images = False)
     warm_images(product, 'product')
 
     # `rendition_key_set` could be taken from field's or model's attrbiute `image_sizes`, otherwise uses default key set
