@@ -1,6 +1,6 @@
-============================
+===============================
 django-ok-images |PyPI version|
-============================
+===============================
 
 |Build Status| |Code Health| |Coverage| |Requirements Status| |Python Versions| |PyPI downloads| |license|
 |Project Status|
@@ -123,8 +123,8 @@ Utils:
 
 .. |PyPI version| image:: https://badge.fury.io/py/django-ok-images.svg
    :target: https://badge.fury.io/py/django-ok-images
-.. |Build Status| image:: https://travis-ci.org/LowerDeez/ok-images.svg?branch=master
-   :target: https://travis-ci.org/LowerDeez/ok-images
+.. |Build Status| image:: https://github.com/LowerDeez/ok-images/workflows/Upload%20Python%20Package/badge.svg
+   :target: https://github.com/LowerDeez/ok-images/
    :alt: Build status
 .. |Code Health| image:: https://api.codacy.com/project/badge/Grade/e5078569e40d428283d17efa0ebf9d19
    :target: https://www.codacy.com/app/LowerDeez/ok-images
