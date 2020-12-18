@@ -4,7 +4,7 @@ django-ok-images |PyPI version|
 
 |Build Status| |Code Health| |Python Versions| |PyPI downloads| |license| |Project Status|
 
-WebP extensions for `django-versatileimagefield`_.
+WebP sizers and filters for `django-versatileimagefield`_. Custom image field with direct access to created images through readable names and model mixin to inherit. Helper utils to delete created images, clear cache and warm images.
 
 Installation
 ============
@@ -46,7 +46,7 @@ Add next file in any app to register sizers and filters (`more details <https://
 
     # versatileimagefield.py
 
-    from shared.ok_images.contrib.versatileimagefield.versatileimagefield import *
+    from ok_images.contrib.versatileimagefield.versatileimagefield import *
 
 
 Fields:
@@ -79,6 +79,8 @@ Define a model like this:
 .. code:: python
 
     # models.py
+    from ok_images.fields import OptimizedImageField
+    
 
     class Product(models.Model):
         image_sizes = 'product'  # could be set as a global rendition key set for an each image field
@@ -122,7 +124,11 @@ Utils:
 ``warm_images`` - creates all sized images for a given instance or queryset with passed rendition key set.
 
 .. code:: python
-
+    
+    # anywhere.py
+    from ok_images.utils import delete_all_created_images, warm_images
+		
+    	
     delete_all_created_images(Product, delete_images = False)
     warm_images(product, 'product')
 
