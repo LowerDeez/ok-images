@@ -230,7 +230,7 @@ def warm_images(
             rendition_key_set=rendition_key_set,
             image_attr=image_attr
         )
-        img_warmer.warm()
+        return img_warmer.warm()
 
     if isinstance(instance_or_queryset, QuerySet):
         model = instance_or_queryset.model
