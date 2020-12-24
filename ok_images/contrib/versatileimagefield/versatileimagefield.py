@@ -4,7 +4,7 @@ to make it visible for versatileimagefield
 """
 from PIL import Image
 
-from django.utils.six import BytesIO
+from io import BytesIO
 
 from versatileimagefield.datastructures.sizedimage import (
     MalformedSizedImageKey,
