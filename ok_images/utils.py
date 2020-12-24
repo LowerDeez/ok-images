@@ -26,11 +26,13 @@ logger = logging.getLogger(__name__)
 
 __all__ = (
     'get_tinypng_api_key',
+    'get_file_extension',
     'image_optimizer',
     'image_upload_to',
     'get_model_image_fields',
     'delete_all_created_images',
     'warm_images',
+    'optimize_existing_images'
 )
 
 
@@ -46,14 +48,24 @@ def get_tinypng_api_key():
     return api_key
 
 
+def get_file_extension(file_name):
+    # Get image file extension
+    extension = file_name.split('.')[-1]
+
+    extension = (
+        extension.upper()
+        if extension.lower() != 'jpg' else 'JPEG'
+    )
+
+    return extension
+
+
 def image_optimizer(data):
     """Optimize an image that has not been saved to a file."""
     if not data:
         return data
 
-    extension = data.name.split('.')[-1]
-
-    extension = extension.upper() if extension.lower() != 'jpg' else 'JPEG'
+    extension = get_file_extension(data.name)
 
     optimized = False
     buffer = None
@@ -85,17 +97,22 @@ def image_optimizer(data):
 
         # for PNG
         # if image.mode == 'P':
-        #     image = image.convert('RGB')
-        #
-        # # image.save(bytes_io, format=extension.upper(), optimize=True)
-        #
-        # extension = extension.upper() if extension.lower() != 'png' else 'JPEG'
+            # image = image.convert('RGB')
+
+        save_kwargs = {
+            'format': extension,
+            'optimize': True,
+            'quality': IMAGE_OPTIMIZE_QUALITY,
+        }
+
+        if extension == 'WEBP':
+            save_kwargs['lossless'] = True
+        elif extension == 'JPEG':
+            save_kwargs['progressive'] = True
 
         image.save(
             bytes_io,
-            format=extension,
-            optimize=True,
-            quality=IMAGE_OPTIMIZE_QUALITY
+            **save_kwargs
         )
         buffer = bytes_io.getvalue()
 
@@ -151,47 +168,70 @@ def delete_all_created_images(*all_models, delete_images: bool = True):
     """
     Delete all created images and clear cache
     """
-    from .models import ImageMixin
-
     if not all_models:
         all_models = apps.get_models()
 
     for model in all_models:
-        if issubclass(model, ImageMixin):
-            image_fields = get_model_image_fields(model)
-            image_sizes = model.image_sizes
-            print(image_sizes)
-            key_sets = IMAGE_RENDITION_KEY_SETS.get(image_sizes, [])
-            print(key_sets)
+        image_fields = get_model_image_fields(model)
 
-            for obj in model.objects.all():
-                for field in image_fields:
-                    image_field = getattr(obj, field.name)
+        if not image_fields:
+            continue
 
-                    if delete_images and image_field:
+        image_sizes = getattr(model, 'image_sizes', None)
+        key_sets = IMAGE_RENDITION_KEY_SETS.get(image_sizes, [])
+
+        for obj in model.objects.all():
+            for field in image_fields:
+                image_field = getattr(obj, field.name)
+
+                if image_field:
+                    if image_field.image_sizes:
+                        image_sizes = image_field.image_sizes
+
+                        # default key set
+                        if isinstance(image_sizes, list):
+                            key_sets = []
+                        else:
+                            key_sets = IMAGE_RENDITION_KEY_SETS.get(image_sizes, [])
+
+                    if delete_images:
                         image_field.delete_all_created_images()
 
-                        for key_set in key_sets:
-                            name, rendition_key = key_set
+                    # clear cache
+                    for key_set in key_sets:
+                        name, rendition_key = key_set
 
-                            if '__' in rendition_key:
-                                rendition_key_set = rendition_key.split('__')
-                                print(rendition_key_set)
+                        if '__' in rendition_key:
+                            rendition_key_set = rendition_key.split('__')
+                            print(rendition_key_set)
 
-                                if rendition_key_set:
-                                    if len(rendition_key_set) == 2:
-                                        method, size = rendition_key_set
+                            if rendition_key_set:
+                                if len(rendition_key_set) == 2:
+                                    method, size = rendition_key_set
 
-                                        getattr(image_field, method)[size].clear_cache()
+                                    getattr(image_field, method)[size].clear_cache()
 
-                                    elif rendition_key_set[0] == 'filters':
-                                        filters = getattr(image_field, 'filters')
-                                        getattr(filters, rendition_key_set[1]).clear_cache()
+                                # clear filters cache
+                                elif rendition_key_set[0] == 'filters':
+                                    filters = getattr(image_field, 'filters')
+                                    getattr(filters, rendition_key_set[1]).clear_cache()
 
-                        image_field.thumbnail['300x300'].clear_cache()
+                    image_field.thumbnail['300x300'].clear_cache()
 
 
-def warm_images(instance_or_queryset, rendition_key_set: str = None):
+def warm_images(
+        instance_or_queryset,
+        rendition_key_set: str = None,
+        image_attr: str = None
+):
+    if rendition_key_set and image_attr:
+        img_warmer = VersatileImageFieldWarmer(
+            instance_or_queryset=instance_or_queryset,
+            rendition_key_set=rendition_key_set,
+            image_attr=image_attr
+        )
+        img_warmer.warm()
+
     if isinstance(instance_or_queryset, QuerySet):
         model = instance_or_queryset.model
     else:
@@ -212,3 +252,28 @@ def warm_images(instance_or_queryset, rendition_key_set: str = None):
             image_attr=image_field.name
         )
         img_warmer.warm()
+
+
+def optimize_existing_images(*all_models):
+    if not all_models:
+        all_models = apps.get_models()
+
+    for model in all_models:
+        image_fields = get_model_image_fields(model)
+
+        if not image_fields:
+            continue
+
+        for obj in model.objects.all():
+            for field in image_fields:
+                image_field = getattr(obj, field.name)
+
+                if image_field:
+                    extension = get_file_extension(image_field.name)
+                    image = Image.open(image_field.path)
+                    image.save(
+                        image_field.path,
+                        format=extension.upper(),
+                        optimize=True,
+                        quality=IMAGE_OPTIMIZE_QUALITY,
+                    )
