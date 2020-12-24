@@ -237,7 +237,10 @@ def warm_images(
     else:
         model = instance_or_queryset.__class__
 
-    image_fields = get_model_image_fields(model)
+    if image_attr:
+        image_fields = [model._meta.get_field(image_attr)]
+    else:
+        image_fields = get_model_image_fields(model)
 
     for image_field in image_fields:
         if rendition_key_set is None:
