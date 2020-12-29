@@ -3,6 +3,10 @@ import os
 from django.core.cache import cache
 
 from versatileimagefield.files import VersatileImageFieldFile
+from versatileimagefield.utils import (
+    validate_versatileimagefield_sizekey_list,
+    get_rendition_key_set
+)
 
 from .consts import IMAGE_DEFAULT_RENDITION_KEY_SET
 
@@ -15,11 +19,16 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.image_sizes_serializer = self.field.image_sizes_serializer
-        self.image_sizes = (
+        image_sizes = (
                 self.field.image_sizes
                 or getattr(self.instance, 'image_sizes', None)
                 or IMAGE_DEFAULT_RENDITION_KEY_SET
         )
+
+        if isinstance(image_sizes, str):
+            image_sizes = get_rendition_key_set(image_sizes)
+
+        self.image_sizes = validate_versatileimagefield_sizekey_list(image_sizes)
         self._create_on_demand = self.field.create_on_demand
 
         if self.name:
@@ -31,8 +40,14 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
                     self
                 )
             )
-            for size, url in self._sizes.items():
-                setattr(self, size, url)
+        else:
+            self._sizes = {}
+
+            for key, image_key in self.image_sizes:
+                self._sizes[key] = self.field.placeholder_image_name
+
+        for size, url in self._sizes.items():
+            setattr(self, size, url)
 
     def delete_matching_files_from_storage(self, root_folder, regex):
         """
