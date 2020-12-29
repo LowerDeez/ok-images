@@ -1,3 +1,5 @@
+# stolen from https://github.com/codingjoe/django-stdimage/blob/master/stdimage/validators.py
+
 from io import BytesIO
 
 from django.core.exceptions import ValidationError
