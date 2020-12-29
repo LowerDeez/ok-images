@@ -26,6 +26,8 @@ Available settings
 
 ``IMAGE_CREATE_ON_DEMAND`` - Custom value for `django-versatileimagefield`_ `create_images_on_demand` setting.
 
+``IMAGE_PLACEHOLDER_PATH`` - Placeholder path for `django-versatileimagefield`_.
+
 How to enable image optimization through TinyPNG:
 -------------------------------------------------
 

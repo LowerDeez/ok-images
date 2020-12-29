@@ -1,11 +1,13 @@
 from django.core.validators import FileExtensionValidator
 
 from versatileimagefield.fields import VersatileImageField
+from versatileimagefield.placeholder import OnStoragePlaceholderImage
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 from .consts import (
     IMAGE_ALLOWED_EXTENSIONS,
-    IMAGE_CREATE_ON_DEMAND
+    IMAGE_CREATE_ON_DEMAND,
+    IMAGE_PLACEHOLDER_PATH
 )
 from .files import OptimizedVersatileImageFieldFile
 from .utils import image_upload_to, image_optimizer
@@ -30,9 +32,16 @@ class OptimizedImageField(VersatileImageField):
         self.create_on_demand = (
             kwargs.pop('create_on_demand', IMAGE_CREATE_ON_DEMAND)
         )
+
         super().__init__(*args, **kwargs)
+        
         self.upload_to = image_upload_to
         self.validators.append(FileExtensionValidator(IMAGE_ALLOWED_EXTENSIONS))
+
+        if self.placeholder_image is None and IMAGE_PLACEHOLDER_PATH:
+            self.placeholder_image = OnStoragePlaceholderImage(
+                path=IMAGE_PLACEHOLDER_PATH
+            )
 
     def save_form_data(self, instance, data):
         """Remove the OptimizedNotOptimized object on clearing the image."""
