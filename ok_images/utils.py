@@ -243,6 +243,9 @@ def warm_images(
         image_fields = get_model_image_fields(model)
 
     for image_field in image_fields:
+        if image_field.name == "":
+            continue
+
         if rendition_key_set is None:
             rendition_key_set = (
                 image_field.image_sizes

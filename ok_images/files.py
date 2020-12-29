@@ -22,7 +22,7 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
         )
         self._create_on_demand = self.field.create_on_demand
 
-        if self._file:
+        if self.name:
             self._sizes = (
                 self.image_sizes_serializer(
                     sizes=self.image_sizes

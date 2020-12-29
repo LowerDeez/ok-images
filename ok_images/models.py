@@ -21,17 +21,31 @@ class ImageMixin(models.Model):
         alt (CharField): alt text
     """
     image_sizes = None
+    image_preview_size = '300x300'
 
     image = OptimizedImageField(
-        _('Изображение'),
-        ppoi_field='ppoi',
+        _('Image'),
         blank=True,
         null=True,
         db_index=True,
-        image_sizes=image_sizes
+        ppoi_field='image_ppoi',
+        width_field="image_width",
+        height_field="image_height",
     )
-    ppoi = PPOIField(
-        verbose_name=_('PPOI')
+    image_width = models.PositiveIntegerField(
+        _("image width"),
+        blank=True,
+        null=True,
+        editable=False
+    )
+    image_height = models.PositiveIntegerField(
+        _("image height"),
+        blank=True,
+        null=True,
+        editable=False
+    )
+    image_ppoi = PPOIField(
+        verbose_name=_('primary point of interest')
     )
     image_alt = models.CharField(
         _('Image alt'),
@@ -41,9 +55,26 @@ class ImageMixin(models.Model):
 
     class Meta:
         abstract = True
+        verbose_name = _("image")
+        verbose_name_plural = _("images")
 
     def __str__(self):
         return self.image_alt
+
+    def get_image_preview(self, size=None):
+        """
+        Return url of thumbnailed image
+        """
+        try:
+            if not size:
+                size = self.image_preview_size
+
+            if size:
+                return self.image.crop[size].url
+            else:
+                return self.image.url
+        except Exception:
+            return ''
 
     def delete(self, *args, **kwargs):
         self.image.delete(save=False)
