@@ -26,7 +26,7 @@ Available settings
 
 ``IMAGE_CREATE_ON_DEMAND`` - Custom value for `django-versatileimagefield`_ `create_images_on_demand` setting.
 
-``IMAGE_PLACEHOLDER_PATH`` - Placeholder path for `django-versatileimagefield`_.
+``IMAGE_PLACEHOLDER_PATH`` - Default placeholder path for `django-versatileimagefield`_.
 
 How to enable image optimization through TinyPNG:
 -------------------------------------------------
@@ -42,7 +42,7 @@ How to use
 WebP sizers and filter:
 -----------------------
 
-Add next file in any app to register sizers and filters (`more details <https://django-versatileimagefield.readthedocs.io/en/latest/writing_custom_sizers_and_filters.html#registering-sizers-and-filters>`_):
+Add next file in any app to register sizers and filters (`more about sizers and filters <https://django-versatileimagefield.readthedocs.io/en/latest/writing_custom_sizers_and_filters.html#registering-sizers-and-filters>`_):
 
 .. code:: python
 
@@ -58,7 +58,7 @@ There is an ``OptimizedImageField``, inherited from `VersatileImageField <https:
 
 Example of usage:
 
-Add next settings (`more details <https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html#reusing-rendition-key-sets>`_):
+Add next settings (`more about rendition key sets <https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html#reusing-rendition-key-sets>`_):
 
 .. code:: python
 
