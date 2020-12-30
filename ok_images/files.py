@@ -30,8 +30,8 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
 
         self.image_sizes = validate_versatileimagefield_sizekey_list(image_sizes)
         self._create_on_demand = self.field.create_on_demand
-
-        if self.name:
+        
+        if self._file:
             self._sizes = (
                 self.image_sizes_serializer(
                     sizes=self.image_sizes
