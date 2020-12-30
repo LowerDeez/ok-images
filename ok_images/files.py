@@ -30,13 +30,13 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
 
         self.image_sizes = validate_versatileimagefield_sizekey_list(image_sizes)
         self._create_on_demand = self.field.create_on_demand
-        
-        if self._file:
+
+        if self.name and self.storage.exists(self.name):
             self._sizes = (
                 self.image_sizes_serializer(
                     sizes=self.image_sizes
                 )
-                .to_representation(
+                    .to_representation(
                     self
                 )
             )
