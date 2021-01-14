@@ -6,11 +6,13 @@ from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 from .consts import (
     IMAGE_ALLOWED_EXTENSIONS,
+    IMAGE_MAX_FILE_SIZE,
     IMAGE_CREATE_ON_DEMAND,
     IMAGE_PLACEHOLDER_PATH
 )
 from .files import OptimizedVersatileImageFieldFile
 from .utils import image_upload_to, image_optimizer
+from .validators import FileSizeValidator
 
 __all__ = (
     'OptimizedImageField',
@@ -36,7 +38,12 @@ class OptimizedImageField(VersatileImageField):
         super().__init__(*args, **kwargs)
         
         self.upload_to = image_upload_to
-        self.validators.append(FileExtensionValidator(IMAGE_ALLOWED_EXTENSIONS))
+        self.validators.append(
+            FileExtensionValidator(IMAGE_ALLOWED_EXTENSIONS)
+        )
+
+        if not any([isinstance(v, FileSizeValidator) for v in self.validators]):
+            self.validators.append(FileSizeValidator(max_size=IMAGE_MAX_FILE_SIZE))
 
         if self.placeholder_image is None and IMAGE_PLACEHOLDER_PATH:
             self.placeholder_image = OnStoragePlaceholderImage(
@@ -45,23 +52,22 @@ class OptimizedImageField(VersatileImageField):
 
     def save_form_data(self, instance, data):
         """Remove the OptimizedNotOptimized object on clearing the image."""
+        real_data = data
+        file = getattr(instance, self.name)
+
+        if isinstance(data, tuple):
+            real_data = data[0]
+
         # Are we updating an image?
         updating_image = (
-            True if data and getattr(instance, self.name) != data else False
+            True if real_data and file != real_data else False
         )
 
         if updating_image:
             # to delete file on input clear
-            to_check = data
 
-            if to_check is not None:
-                if isinstance(data, tuple):
-                    to_check = data[0]
-
-                file = getattr(instance, self.attname)
-
-                if file and file != to_check:
-                    file.delete(save=False)
+            if real_data is not None and file and file != real_data:
+                file.delete(save=False)
 
             # optimize data
             if data:

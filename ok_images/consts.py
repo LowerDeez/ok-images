@@ -4,6 +4,7 @@ from versatileimagefield.settings import VERSATILEIMAGEFIELD_CREATE_ON_DEMAND
 
 __all__ = (
     'IMAGE_ALLOWED_EXTENSIONS',
+    'IMAGE_MAX_FILE_SIZE',
     'IMAGE_RENDITION_KEY_SETS',
     'IMAGE_DEFAULT_RENDITION_KEY_SET',
     'IMAGE_OPTIMIZE_QUALITY',
@@ -19,6 +20,12 @@ IMAGE_ALLOWED_EXTENSIONS = getattr(
     settings,
     'IMAGE_ALLOWED_EXTENSIONS',
     ['jpeg', 'jpg', 'png', 'ico']
+)
+
+IMAGE_MAX_FILE_SIZE = getattr(
+    settings,
+    'IMAGE_MAX_FILE_SIZE',
+    10  # 10 megabytes
 )
 
 

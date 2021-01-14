@@ -36,15 +36,15 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
                 self.image_sizes_serializer(
                     sizes=self.image_sizes
                 )
-                    .to_representation(
+                .to_representation(
                     self
                 )
             )
         else:
-            self._sizes = {}
-
-            for key, image_key in self.image_sizes:
-                self._sizes[key] = self.field.placeholder_image_name
+            self._sizes = {
+                key: self.field.placeholder_image_name
+                for key, _ in self.image_sizes
+            }
 
         for size, url in self._sizes.items():
             setattr(self, size, url)

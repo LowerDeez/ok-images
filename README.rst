@@ -22,6 +22,8 @@ Available settings
 
 ``IMAGE_ALLOWED_EXTENSIONS`` - Extensions for `OptimizedImageField`'s `FileExtensionValidator`.
 
+``IMAGE_MAX_FILE_SIZE`` - Max file size of uploaded images in megabytes. Default to `10`.
+
 ``IMAGE_OPTIMIZE_QUALITY`` - Quality to optimize an uploaded image.
 
 ``IMAGE_CREATE_ON_DEMAND`` - Custom value for `django-versatileimagefield`_ `create_images_on_demand` setting.
