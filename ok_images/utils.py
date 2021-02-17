@@ -1,6 +1,7 @@
 from io import BytesIO
 import logging
 from PIL import Image
+from PIL.WebPImagePlugin import WebPImageFile
 
 from django.apps import apps
 from django.db.models import Model, QuerySet
@@ -94,6 +95,12 @@ def image_optimizer(data):
             )
             background.paste(image, image.split()[-1])
             image = background
+
+        # hidden webp image
+        if isinstance(image, WebPImageFile) and extension.lower() != 'webp':
+            new_name = data.name.rsplit('.', 1)[0] + '.webp'
+            data.name = new_name
+            extension = 'WEBP'
 
         # for PNG
         # if image.mode == 'P':
@@ -254,7 +261,10 @@ def warm_images(
 
         img_warmer = VersatileImageFieldWarmer(
             instance_or_queryset=instance_or_queryset,
-            rendition_key_set=rendition_key_set or IMAGE_DEFAULT_RENDITION_KEY_SET,
+            rendition_key_set=(
+                rendition_key_set
+                or IMAGE_DEFAULT_RENDITION_KEY_SET
+            ),
             image_attr=image_field.name
         )
         img_warmer.warm()

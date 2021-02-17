@@ -74,6 +74,7 @@ class MinSizeValidator(BaseSizeValidator):
     image1 = StdImageField(validators=[MinSizeValidator(800, 600)])
 
     """
+    code = 'min_resolution'
     message = _(
         'The image you uploaded is too small.'
         ' The required minimum resolution is:'
