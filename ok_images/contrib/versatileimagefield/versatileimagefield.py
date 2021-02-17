@@ -3,6 +3,7 @@ You need to import this file in any app in versatileimagefield.py file
 to make it visible for versatileimagefield
 """
 from PIL import Image
+from PIL.WebPImagePlugin import WebPImageFile
 
 from io import BytesIO
 
@@ -196,6 +197,69 @@ class WebPCroppedImage(WebPMixin, CroppedImage):
         return imagefile
 
 
+class MyCroppedImage(CroppedImage):
+    def process_image(self, image, image_format, save_kwargs,
+                      width, height):
+        """
+        Return a BytesIO instance of `image` cropped to `width` and `height`.
+
+        Cropping will first reduce an image down to its longest side
+        and then crop inwards centered on the Primary Point of Interest
+        (as specified by `self.ppoi`)
+        """
+        imagefile = BytesIO()
+        palette = image.getpalette()
+        cropped_image = self.crop_on_centerpoint(
+            image,
+            width,
+            height,
+            self.ppoi
+        )
+
+        # Using ImageOps.fit on GIFs can introduce issues with their palette
+        # Solution derived from: http://stackoverflow.com/a/4905209/1149774
+        if image_format == 'GIF':
+            cropped_image.putpalette(palette)
+
+        if isinstance(image, WebPImageFile):
+            save_kwargs['format'] = 'JPEG'
+
+        cropped_image.save(
+            imagefile,
+            **save_kwargs
+        )
+
+        return imagefile
+
+
+class MyThumbnailImage(ThumbnailImage):
+    def process_image(self, image, image_format, save_kwargs,
+                      width, height):
+        """
+        Return a BytesIO instance of `image` that fits in a bounding box.
+
+        Bounding box dimensions are `width`x`height`.
+        """
+        imagefile = BytesIO()
+        image.thumbnail(
+            (width, height),
+            Image.ANTIALIAS
+        )
+
+        if isinstance(image, WebPImageFile):
+            save_kwargs['format'] = 'JPEG'
+
+        image.save(
+            imagefile,
+            **save_kwargs
+        )
+        return imagefile
+
+
 versatileimagefield_registry.register_filter('to_webp', ToWebPImage)
 versatileimagefield_registry.register_sizer("thumbnail_webp", WebPThumbnailImage)
 versatileimagefield_registry.register_sizer("crop_webp", WebPCroppedImage)
+versatileimagefield_registry.unregister_sizer('crop')
+versatileimagefield_registry.register_sizer('crop', MyCroppedImage)
+versatileimagefield_registry.unregister_sizer('thumbnail')
+versatileimagefield_registry.register_sizer('thumbnail', MyThumbnailImage)

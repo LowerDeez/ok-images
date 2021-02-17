@@ -19,7 +19,7 @@ __all__ = (
 IMAGE_ALLOWED_EXTENSIONS = getattr(
     settings,
     'IMAGE_ALLOWED_EXTENSIONS',
-    ['jpeg', 'jpg', 'png', 'ico']
+    ['jpeg', 'jpg', 'png', 'ico', 'webp']
 )
 
 IMAGE_MAX_FILE_SIZE = getattr(
