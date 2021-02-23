@@ -18,8 +18,8 @@ from versatileimagefield.registry import versatileimagefield_registry
 from versatileimagefield.utils import QUAL
 from versatileimagefield.versatileimagefield import (
     FilteredImage,
-    CroppedImage,
-    ThumbnailImage
+    CroppedImage as DefaultCroppedImage,
+    ThumbnailImage as DefaultThumbnailImage
 )
 
 from .utils import (
@@ -30,7 +30,10 @@ from .utils import (
 __all__ = (
     'WebPMixin',
     'ToWebPImage',
-    'WebPThumbnailImage'
+    'WebPThumbnailImage',
+    'WebPCroppedImage',
+    'CroppedImage',
+    'ThumbnailImage'
 )
 
 
@@ -142,7 +145,7 @@ class ToWebPImage(WebPMixin, FilteredImage):
         return imagefile
 
 
-class WebPThumbnailImage(WebPMixin, ThumbnailImage):
+class WebPThumbnailImage(WebPMixin, DefaultThumbnailImage):
     """
     object.image.thumbnail_webp['512x511'].url
     """
@@ -164,7 +167,7 @@ class WebPThumbnailImage(WebPMixin, ThumbnailImage):
         return imagefile
 
 
-class WebPCroppedImage(WebPMixin, CroppedImage):
+class WebPCroppedImage(WebPMixin, DefaultCroppedImage):
     """
     object.image.crop_webp['512x511'].url
     """
@@ -197,7 +200,7 @@ class WebPCroppedImage(WebPMixin, CroppedImage):
         return imagefile
 
 
-class MyCroppedImage(CroppedImage):
+class CroppedImage(DefaultCroppedImage):
     def process_image(self, image, image_format, save_kwargs,
                       width, height):
         """
@@ -232,7 +235,7 @@ class MyCroppedImage(CroppedImage):
         return imagefile
 
 
-class MyThumbnailImage(ThumbnailImage):
+class ThumbnailImage(DefaultThumbnailImage):
     def process_image(self, image, image_format, save_kwargs,
                       width, height):
         """
@@ -260,6 +263,6 @@ versatileimagefield_registry.register_filter('to_webp', ToWebPImage)
 versatileimagefield_registry.register_sizer("thumbnail_webp", WebPThumbnailImage)
 versatileimagefield_registry.register_sizer("crop_webp", WebPCroppedImage)
 versatileimagefield_registry.unregister_sizer('crop')
-versatileimagefield_registry.register_sizer('crop', MyCroppedImage)
 versatileimagefield_registry.unregister_sizer('thumbnail')
-versatileimagefield_registry.register_sizer('thumbnail', MyThumbnailImage)
+versatileimagefield_registry.register_sizer('crop', CroppedImage)
+versatileimagefield_registry.register_sizer('thumbnail', ThumbnailImage)
