@@ -15,6 +15,16 @@ Install with pip:
 
     $ pip install django-ok-images
 
+Update INSTALLED_APPS:
+
+.. code:: python
+
+    INSTALLED_APPS = [
+        ...
+        'versatileimagefield',
+        ...
+    ]
+
 
 
 Available settings
