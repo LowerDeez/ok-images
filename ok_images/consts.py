@@ -10,6 +10,7 @@ __all__ = (
     'IMAGE_OPTIMIZE_QUALITY',
     'IMAGE_CREATE_ON_DEMAND',
     'IMAGE_PLACEHOLDER_PATH',
+    'IMAGE_RGBA_CHANGE_BACKGROUND',
     'TINYPNG_ALLOWED_EXTENSIONS',
     'TINYPNG_API_KEY_FUNCTION',
     'TINYPNG_API_KEY',
@@ -51,10 +52,28 @@ IMAGE_CREATE_ON_DEMAND = getattr(
     VERSATILEIMAGEFIELD_CREATE_ON_DEMAND
 )
 
-IMAGE_PLACEHOLDER_PATH = getattr(settings, 'IMAGE_PLACEHOLDER_PATH', None)
+IMAGE_PLACEHOLDER_PATH = getattr(
+    settings,
+    'IMAGE_PLACEHOLDER_PATH',
+    None
+)
+
+IMAGE_RGBA_CHANGE_BACKGROUND = getattr(
+    settings,
+    'IMAGE_PLACEHOLDER_PATH',
+    False
+)
 
 TINYPNG_ALLOWED_EXTENSIONS = ['jpeg', 'jpg', 'png']
 
-TINYPNG_API_KEY_FUNCTION = getattr(settings, 'TINYPNG_API_KEY_FUNCTION', None)
+TINYPNG_API_KEY_FUNCTION = getattr(
+    settings,
+    'TINYPNG_API_KEY_FUNCTION',
+    None
+)
 
-TINYPNG_API_KEY = getattr(settings, 'TINYPNG_API_KEY', None)
+TINYPNG_API_KEY = getattr(
+    settings,
+    'TINYPNG_API_KEY',
+    None
+)

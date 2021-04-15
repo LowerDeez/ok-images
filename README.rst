@@ -40,6 +40,8 @@ Available settings
 
 ``IMAGE_PLACEHOLDER_PATH`` - Default placeholder path for `django-versatileimagefield`_.
 
+``IMAGE_RGBA_CHANGE_BACKGROUND`` - Changes background of RGBA images to white color.
+
 How to enable image optimization through TinyPNG:
 -------------------------------------------------
 

@@ -18,6 +18,7 @@ from .consts import (
     IMAGE_DEFAULT_RENDITION_KEY_SET,
     IMAGE_RENDITION_KEY_SETS,
     IMAGE_OPTIMIZE_QUALITY,
+    IMAGE_RGBA_CHANGE_BACKGROUND,
     TINYPNG_ALLOWED_EXTENSIONS,
     TINYPNG_API_KEY_FUNCTION,
     TINYPNG_API_KEY
@@ -75,12 +76,15 @@ def image_optimizer(data):
 
     if (
             tinypng_api_key
-            and extension.lower() in TINYPNG_ALLOWED_EXTENSIONS
+            and extension.lower()
+            in TINYPNG_ALLOWED_EXTENSIONS
     ):
         tinify.key = tinypng_api_key
 
         try:
-            buffer = tinify.from_buffer(data.file.read()).to_buffer()
+            buffer = (
+                tinify.from_buffer(data.file.read()).to_buffer()
+            )
             optimized = True
         except Error as e:
             logger.error(f"TinyPNG error: {e}")
@@ -89,7 +93,7 @@ def image_optimizer(data):
         image = Image.open(data)
         bytes_io = BytesIO()
 
-        if image.mode in ('RGBA', 'LA'):
+        if image.mode in ('RGBA', 'LA') and IMAGE_RGBA_CHANGE_BACKGROUND:
             background = (
                 Image.new(image.mode[:-1], image.size, '#FFFFFF')
             )

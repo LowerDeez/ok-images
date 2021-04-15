@@ -65,7 +65,6 @@ class OptimizedImageField(VersatileImageField):
 
         if updating_image:
             # to delete file on input clear
-
             if real_data is not None and file and file != real_data:
                 file.delete(save=False)
 
