@@ -84,6 +84,7 @@ class OptimizedImageField(VersatileImageField):
             setattr(field, size, url)
 
     def post_delete_callback(self, sender, instance, **kwargs):
+        # force delete file and orphans
         getattr(instance, self.name).delete(False)
 
     def contribute_to_class(self, cls, name, **kwargs):

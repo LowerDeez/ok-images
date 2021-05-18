@@ -75,7 +75,3 @@ class ImageMixin(models.Model):
                 return self.image.url
         except Exception:
             return ''
-
-    def delete(self, *args, **kwargs):
-        self.image.delete(save=False)
-        super().delete(*args, **kwargs)
