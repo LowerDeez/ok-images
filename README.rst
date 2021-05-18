@@ -158,6 +158,7 @@ Async image warming:
 `tasks.py`:
 
 .. code:: python
+
     from ok_images.utils import warm_images
 
     @app.task
