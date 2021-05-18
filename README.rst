@@ -159,15 +159,12 @@ Async image warming:
 
 .. code:: python
     from ok_images.utils import warm_images
-    	
-    	
-	@app.task
-	def images_warmer_task(product_pk: int):
-	    from store.models import Product
 
-	    product = Product.objects.get(pk=product_pk)
-
-	    warm_images(
+    @app.task
+    def images_warmer_task(product_pk: int):
+        from store.models import Product
+        product = Product.objects.get(pk=product_pk)
+        warm_images(
 			instance_or_queryset=product,
 			image_attr='image'
 	    )
@@ -177,15 +174,15 @@ Async image warming:
 
 .. code:: python
    
-	from .tasks import images_warmer_task
+    from .tasks import images_warmer_task
     	
     	
-	def images_warmer(product):
-		images_warmer_task.delay(product.pk)
+    def images_warmer(product):
+        images_warmer_task.delay(product.pk)
 	
 		
-	class Product(models.Model):
-        image_sizes = 'product'  # could be set as a global rendition key set for an each image field
+    class Product(models.Model):
+        image_sizes = 'product'
 
         image = OptimizedImageField(
             _('Image'),
