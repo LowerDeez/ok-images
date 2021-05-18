@@ -166,9 +166,9 @@ Async image warming:
         from store.models import Product
         product = Product.objects.get(pk=product_pk)
         warm_images(
-			instance_or_queryset=product,
-			image_attr='image'
-	    )
+            instance_or_queryset=product,
+            image_attr='image'
+        )
 
 
 `models.py`:
