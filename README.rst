@@ -152,6 +152,50 @@ Utils:
     warm_images(Product.objects.all())
 
 
+Async image warming:
+--------------------
+
+`tasks.py`:
+
+.. code:: python
+    from ok_images.utils import warm_images
+    	
+    	
+	@app.task
+	def images_warmer_task(product_pk: int):
+	    from store.models import Product
+
+	    product = Product.objects.get(pk=product_pk)
+
+	    warm_images(
+			instance_or_queryset=product,
+			image_attr='image'
+	    )
+
+
+`models.py`:
+
+.. code:: python
+   
+	from .tasks import images_warmer_task
+    	
+    	
+	def images_warmer(product):
+		images_warmer_task.delay(product.pk)
+	
+		
+	class Product(models.Model):
+        image_sizes = 'product'  # could be set as a global rendition key set for an each image field
+
+        image = OptimizedImageField(
+            _('Image'),
+            ppoi_field='ppoi',
+            blank=True,
+            null=True,
+            images_warmer=images_warmer
+        )
+
+
 .. |PyPI version| image:: https://badge.fury.io/py/django-ok-images.svg
    :target: https://badge.fury.io/py/django-ok-images
 .. |Build Status| image:: https://github.com/LowerDeez/ok-images/workflows/Upload%20Python%20Package/badge.svg

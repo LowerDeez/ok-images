@@ -15,6 +15,7 @@ from unidecode import unidecode
 from versatileimagefield.image_warmer import VersatileImageFieldWarmer
 
 from .consts import (
+    IMAGE_ALLOWED_EXTENSIONS,
     IMAGE_DEFAULT_RENDITION_KEY_SET,
     IMAGE_RENDITION_KEY_SETS,
     IMAGE_OPTIMIZE_QUALITY,
@@ -89,7 +90,7 @@ def image_optimizer(data):
         except Error as e:
             logger.error(f"TinyPNG error: {e}")
 
-    if not optimized:
+    if not optimized and extension in IMAGE_ALLOWED_EXTENSIONS:
         image = Image.open(data)
         bytes_io = BytesIO()
 

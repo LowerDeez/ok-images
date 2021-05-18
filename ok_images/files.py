@@ -1,6 +1,7 @@
 import os
 
 from django.core.cache import cache
+from django.db import transaction
 
 from versatileimagefield.files import VersatileImageFieldFile
 from versatileimagefield.utils import (
@@ -19,35 +20,23 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.image_sizes_serializer = self.field.image_sizes_serializer
+        self.image_sizes = self.get_validated_image_sizes(self.instance, self.field.image_sizes)
+        self._create_on_demand = self.field.create_on_demand
+
+    @classmethod
+    def get_validated_image_sizes(cls, instance, image_sizes=None):
         image_sizes = (
-                self.field.image_sizes
-                or getattr(self.instance, 'image_sizes', None)
-                or IMAGE_DEFAULT_RENDITION_KEY_SET
+            image_sizes
+            or getattr(instance, 'image_sizes', None)
+            or IMAGE_DEFAULT_RENDITION_KEY_SET
         )
 
         if isinstance(image_sizes, str):
             image_sizes = get_rendition_key_set(image_sizes)
 
-        self.image_sizes = validate_versatileimagefield_sizekey_list(image_sizes)
-        self._create_on_demand = self.field.create_on_demand
+        image_sizes = validate_versatileimagefield_sizekey_list(image_sizes)
 
-        if self.name and self.storage.exists(self.name):
-            self._sizes = (
-                self.image_sizes_serializer(
-                    sizes=self.image_sizes
-                )
-                .to_representation(
-                    self
-                )
-            )
-        else:
-            self._sizes = {
-                key: self.field.placeholder_image_name
-                for key, _ in self.image_sizes
-            }
-
-        for size, url in self._sizes.items():
-            setattr(self, size, url)
+        return image_sizes
 
     def delete_matching_files_from_storage(self, root_folder, regex):
         """
@@ -97,3 +86,30 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
     def delete(self, save=True):
         self.delete_all_created_images()
         super().delete(save=save)
+
+    def save(self, name, content, save=True):
+        super().save(name, content, save)
+        images_warmer = self.field.images_warmer
+
+        if images_warmer:
+            transaction.on_commit(lambda: images_warmer(self.instance))
+        else:
+            self.build_versatileimagefield_url_set()
+
+    def build_versatileimagefield_url_set(self):
+        file = VersatileImageFieldFile(self.instance, self.field, self.name)
+
+        if self.name and self.storage.exists(self.name):
+            self._sizes = (
+                self.image_sizes_serializer(
+                    sizes=self.image_sizes
+                )
+                .to_representation(
+                    file
+                )
+            )
+        else:
+            self._sizes = {
+                key: self.field.placeholder_image_name
+                for key, _ in self.image_sizes
+            }
