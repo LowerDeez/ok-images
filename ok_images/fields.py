@@ -11,7 +11,7 @@ from .consts import (
     IMAGE_CREATE_ON_DEMAND,
     IMAGE_PLACEHOLDER_PATH,
 )
-from .files import OptimizedVersatileImageFieldFile
+from .files import OptimizedVersatileImageFieldFile, OptimizedVersatileImageFileDescriptor
 from .utils import image_upload_to, image_optimizer
 from .validators import FileSizeValidator
 
@@ -22,6 +22,7 @@ __all__ = (
 
 class OptimizedImageField(VersatileImageField):
     """An ImageField that gets optimized on save() using tinyPNG."""
+    descriptor_class = OptimizedVersatileImageFileDescriptor
     attr_class = OptimizedVersatileImageFieldFile
 
     def __init__(self, *args, **kwargs):
@@ -56,6 +57,11 @@ class OptimizedImageField(VersatileImageField):
             )
 
     def set_variations(self, instance=None, **kwargs):
+        is_deferred_field = self.name in instance.get_deferred_fields()
+
+        if is_deferred_field:
+            return
+
         field = getattr(instance, self.name, None)
 
         image_sizes = self.attr_class.get_validated_image_sizes(
@@ -85,7 +91,10 @@ class OptimizedImageField(VersatileImageField):
 
     def post_delete_callback(self, sender, instance, **kwargs):
         # force delete file and orphans
-        getattr(instance, self.name).delete(False)
+        field = getattr(instance, self.name)
+
+        if field:
+            getattr(instance, self.name).delete(False)
 
     def contribute_to_class(self, cls, name, **kwargs):
         super().contribute_to_class(cls, name, **kwargs)

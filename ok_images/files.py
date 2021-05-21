@@ -3,7 +3,8 @@ import os
 from django.core.cache import cache
 from django.db import transaction
 
-from versatileimagefield.files import VersatileImageFieldFile
+from versatileimagefield.fields import VersatileImageField
+from versatileimagefield.files import VersatileImageFieldFile, VersatileImageFileDescriptor
 from versatileimagefield.utils import (
     validate_versatileimagefield_sizekey_list,
     get_rendition_key_set
@@ -12,8 +13,17 @@ from versatileimagefield.utils import (
 from .consts import IMAGE_DEFAULT_RENDITION_KEY_SET
 
 __all__ = (
+    'OptimizedVersatileImageFileDescriptor',
     'OptimizedVersatileImageFieldFile',
 )
+
+
+class OptimizedVersatileImageFileDescriptor(VersatileImageFileDescriptor):
+    def __set__(self, instance, value):
+        return super().__set__(instance, value)
+
+    def __get__(self, instance=None, owner=None):
+        return super().__get__(instance, owner)
 
 
 class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
