@@ -13,7 +13,7 @@ Install with pip:
 
 .. code:: shell
 
-    $ pip install django-ok-images
+    $ pip install django-ok-images django-versatileimagefield
 
 Update INSTALLED_APPS:
 
