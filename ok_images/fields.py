@@ -104,7 +104,8 @@ class OptimizedImageField(VersatileImageField):
     def save_form_data(self, instance, data):
         """Remove the OptimizedNotOptimized object on clearing the image."""
         data_ = data
-        file = getattr(instance, self.name)
+        # save to old_file attr to delete image later on replace or clear input
+        self.old_file = file = getattr(instance, self.name)
 
         if isinstance(data, tuple):
             data_ = data[0]
@@ -122,9 +123,15 @@ class OptimizedImageField(VersatileImageField):
             else:
                 data = image_optimizer(data)
 
-        # delete orphans files on file clear or change
-        if data_ is False or data_ is not None:
-            if file and file._committed and file != data_:
-                file.delete(save=False)
-
         super().save_form_data(instance, data)
+
+    def pre_save(self, model_instance, add):
+        old_file = getattr(self, 'old_file', None)
+        
+        file = super().pre_save(model_instance, add)
+
+        # handle clear input here, because on input clear save method is not calling
+        if file._committed and old_file:
+            old_file.delete()
+
+        return file

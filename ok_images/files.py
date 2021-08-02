@@ -98,6 +98,12 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
         super().delete(save=save)
 
     def save(self, name, content, save=True):
+        # delete old file on replace
+        old_file = getattr(self.field, 'old_file', None)
+
+        if old_file:
+            old_file.delete(save=False)
+
         super().save(name, content, save)
         images_warmer = self.field.images_warmer
 
