@@ -127,11 +127,11 @@ class OptimizedImageField(VersatileImageField):
 
     def pre_save(self, model_instance, add):
         old_file = getattr(self, 'old_file', None)
-        
+
         file = super().pre_save(model_instance, add)
 
         # handle clear input here, because on input clear save method is not calling
-        if file._committed and old_file:
+        if file._committed and not file and old_file:
             old_file.delete()
 
         return file
