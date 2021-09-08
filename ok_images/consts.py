@@ -14,6 +14,7 @@ __all__ = (
     'TINYPNG_ALLOWED_EXTENSIONS',
     'TINYPNG_API_KEY_FUNCTION',
     'TINYPNG_API_KEY',
+    'OLD_IMAGE_FILE_KEY'
 )
 
 
@@ -77,3 +78,6 @@ TINYPNG_API_KEY = getattr(
     'TINYPNG_API_KEY',
     None
 )
+
+OLD_IMAGE_FILE_KEY = '_old_image_file'
+

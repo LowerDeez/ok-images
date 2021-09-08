@@ -3,14 +3,13 @@ import os
 from django.core.cache import cache
 from django.db import transaction
 
-from versatileimagefield.fields import VersatileImageField
 from versatileimagefield.files import VersatileImageFieldFile, VersatileImageFileDescriptor
 from versatileimagefield.utils import (
     validate_versatileimagefield_sizekey_list,
     get_rendition_key_set
 )
 
-from .consts import IMAGE_DEFAULT_RENDITION_KEY_SET
+from .consts import IMAGE_DEFAULT_RENDITION_KEY_SET, OLD_IMAGE_FILE_KEY
 
 __all__ = (
     'OptimizedVersatileImageFileDescriptor',
@@ -99,7 +98,7 @@ class OptimizedVersatileImageFieldFile(VersatileImageFieldFile):
 
     def save(self, name, content, save=True):
         # delete old file on replace
-        old_file = getattr(self.field, 'old_file', None)
+        old_file = getattr(self.instance, OLD_IMAGE_FILE_KEY, None)
 
         if old_file:
             old_file.delete(save=False)

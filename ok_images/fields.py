@@ -10,6 +10,7 @@ from .consts import (
     IMAGE_MAX_FILE_SIZE,
     IMAGE_CREATE_ON_DEMAND,
     IMAGE_PLACEHOLDER_PATH,
+    OLD_IMAGE_FILE_KEY
 )
 from .files import OptimizedVersatileImageFieldFile, OptimizedVersatileImageFileDescriptor
 from .utils import image_upload_to, image_optimizer
@@ -105,7 +106,8 @@ class OptimizedImageField(VersatileImageField):
         """Remove the OptimizedNotOptimized object on clearing the image."""
         data_ = data
         # save to old_file attr to delete image later on replace or clear input
-        self.old_file = file = getattr(instance, self.name)
+        file = getattr(instance, self.name)
+        setattr(instance, OLD_IMAGE_FILE_KEY, file)
 
         if isinstance(data, tuple):
             data_ = data[0]
@@ -126,11 +128,11 @@ class OptimizedImageField(VersatileImageField):
         super().save_form_data(instance, data)
 
     def pre_save(self, model_instance, add):
-        old_file = getattr(self, 'old_file', None)
+        # handle clear input here, because on input clear save method is not calling
+        old_file = getattr(model_instance, OLD_IMAGE_FILE_KEY, None)
 
         file = super().pre_save(model_instance, add)
 
-        # handle clear input here, because on input clear save method is not calling
         if file._committed and not file and old_file:
             old_file.delete()
 
