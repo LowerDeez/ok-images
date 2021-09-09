@@ -4,7 +4,7 @@ Utils from versatileimagefield, modified to accept extensions
 import os
 
 from versatileimagefield.utils import (
-    QUAL,
+    JPEG_QUAL as QUAL,
     post_process_image_key,
     VERSATILEIMAGEFIELD_SIZED_DIRNAME,
     VERSATILEIMAGEFIELD_FILTERED_DIRNAME
