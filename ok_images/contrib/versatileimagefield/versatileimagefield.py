@@ -15,7 +15,7 @@ from versatileimagefield.datastructures.sizedimage import (
     SizedImageInstance
 )
 from versatileimagefield.registry import versatileimagefield_registry
-from versatileimagefield.utils import QUAL
+from versatileimagefield.utils import JPEG_QUAL as QUAL
 from versatileimagefield.versatileimagefield import (
     FilteredImage,
     CroppedImage as DefaultCroppedImage,
