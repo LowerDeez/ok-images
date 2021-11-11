@@ -42,6 +42,8 @@ Available settings
 
 ``IMAGE_RGBA_CHANGE_BACKGROUND`` - Changes background of RGBA images to white color.
 
+``IMAGE_LOSSLESS`` - Image lossless configuration. Default to `False`.
+
 How to enable image optimization through TinyPNG:
 -------------------------------------------------
 

@@ -26,6 +26,7 @@ from .utils import (
     get_resized_path,
     get_filtered_path
 )
+from ...consts import IMAGE_LOSSLESS
 
 __all__ = (
     'WebPMixin',
@@ -118,7 +119,7 @@ class WebPMixin:
         return super().save_image(imagefile, save_path, file_ext, mime_type)
 
     def preprocess_WEBP(self, image, **kwargs):
-        return image, {"quality": QUAL, "lossless": False, "icc_profile": ""}
+        return image, {"quality": QUAL, "lossless": IMAGE_LOSSLESS, "icc_profile": ""}
 
 
 class ToWebPImage(WebPMixin, FilteredImage):
