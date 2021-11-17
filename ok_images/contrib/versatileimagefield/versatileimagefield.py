@@ -114,7 +114,7 @@ class WebPMixin:
         return Image.open(image), file_ext, image_format, mime_type
 
     def save_image(self, imagefile, save_path, file_ext, mime_type):
-        path, ext = save_path.rsplit('.')
+        path, ext = save_path.rsplit('.', 1)
         save_path = f'{path}.{self.ext}'
         return super().save_image(imagefile, save_path, file_ext, mime_type)
 
