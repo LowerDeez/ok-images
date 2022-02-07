@@ -107,7 +107,7 @@ class OptimizedImageField(VersatileImageField):
         data_ = data
         # save to old_file attr to delete image later on replace or clear input
         file = getattr(instance, self.name)
-        setattr(instance, OLD_IMAGE_FILE_KEY, file)
+        setattr(instance, f"{OLD_IMAGE_FILE_KEY}_{self.name}", file)
 
         if isinstance(data, tuple):
             data_ = data[0]
@@ -129,7 +129,7 @@ class OptimizedImageField(VersatileImageField):
 
     def pre_save(self, model_instance, add):
         # handle clear input here, because on input clear save method is not calling
-        old_file = getattr(model_instance, OLD_IMAGE_FILE_KEY, None)
+        old_file = getattr(model_instance, f"{OLD_IMAGE_FILE_KEY}_{self.name}", None)
 
         file = super().pre_save(model_instance, add)
 
